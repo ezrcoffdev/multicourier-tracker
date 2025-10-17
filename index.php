@@ -1,36 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
-
-<?php require_once( $_SERVER['DOCUMENT_ROOT'] . '/access.inc.php') ; ?>
-<?php require_once( $_SERVER['DOCUMENT_ROOT'] . '/config.inc.php') ; ?>
-
+<!--
+  index.php
+  ----------------------------------------------------------------------
+  Минимален изглед/шаблон, който включва track.php и визуализира формата
+  и резултатите за проследяване. Този файл може да се вгради в поддомейн
+  като tracking.example.com или в поддиректория /tracking.
+  - Няма външни зависимости.
+  - Лесен за брандиране чрез style.css.
+-->
+<html lang="bg">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><?php echo SITE_TITLE ;?></title>
-  <link rel="canonical" href="<?php echo SITE_URL ; ?>" />
+  <title><?php echo SITE_TITLE; ?></title>
+  <link rel="canonical" href="<?php echo SITE_URL; ?>" />
   <link rel="stylesheet" href="./style.css" />
-	<?php require_once( $_SERVER['DOCUMENT_ROOT'] . '/feedback.php') ; ?>
 </head>
-
 <body>
-	<!-- Main Area Begin -->
-	<section id="main">
-		<div class="header-sticky">
-			<h1 class="maintitle">Информация за <span class="optional"> движението на </span>Вашата пратка</h1>		
-			<?php require_once( $_SERVER['DOCUMENT_ROOT'] . '/track.php') ; ?>
-	</section>
-	<!-- Main Area End -->
-
-	<!-- Additional Area Start -->
-	<section id="additional">
-		
-	</section>
-	<!-- Additional Area End -->
-
-	<!-- Pixel & Tracking Code Area Begin -->
-  
-  <!-- Pixel & Tracking Code Area End -->
+  <main class="ezar-main">
+    <h1 class="title"><?php echo SITE_TITLE; ?></h1>
+    <?php require_once($_SERVER['DOCUMENT_ROOT'].'/track.php'); ?>
+  </main>
 </body>
 </html>
