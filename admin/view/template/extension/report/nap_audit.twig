@@ -1,0 +1,236 @@
+{{ header }}{{ column_left }}
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="pull-right">
+        <button type="submit" form="form-nap" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+      </div>
+      <h1>{{ heading_title }}</h1>
+      <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+        <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="container-fluid">
+    {% if error_warning %}
+    <div class="alert alert-danger alert-dismissible"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}<button type="button" class="close" data-dismiss="alert">&times;</button></div>
+    {% endif %}
+    {% if success %}
+    <div class="alert alert-success alert-dismissible"><i class="fa fa-check-circle"></i> {{ success }}<button type="button" class="close" data-dismiss="alert">&times;</button></div>
+    {% endif %}
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_edit }}</h3>
+      </div>
+      <div class="panel-body">
+        <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-nap" class="form-horizontal">
+          <ul class="nav nav-tabs">
+            <li class="active"><a href="#tab-store" data-toggle="tab">{{ tab_store }}</a></li>
+            <li><a href="#tab-vat" data-toggle="tab">{{ tab_vat }}</a></li>
+            <li><a href="#tab-payment" data-toggle="tab">{{ tab_payment }}</a></li>
+            <li><a href="#tab-refund" data-toggle="tab">{{ tab_refund }}</a></li>
+            <li><a href="#tab-export" data-toggle="tab">{{ tab_export }}</a></li>
+            <li><a href="#tab-history" data-toggle="tab">{{ tab_history }}</a></li>
+          </ul>
+          <div class="tab-content">
+            <div class="tab-pane active" id="tab-store">
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="input-eik">{{ entry_eik }}</label>
+                <div class="col-sm-10">
+                  <input type="text" name="report_nap_audit_eik" value="{{ report_nap_audit_eik }}" id="input-eik" class="form-control" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="input-shop-id">{{ entry_shop_id }}</label>
+                <div class="col-sm-10">
+                  <input type="text" name="report_nap_audit_shop_id" value="{{ report_nap_audit_shop_id }}" id="input-shop-id" class="form-control" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="input-domain">{{ entry_domain }}</label>
+                <div class="col-sm-10">
+                  <input type="text" name="report_nap_audit_domain" value="{{ report_nap_audit_domain }}" id="input-domain" class="form-control" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="input-shop-type">{{ entry_shop_type }}</label>
+                <div class="col-sm-10">
+                  <select name="report_nap_audit_shop_type" id="input-shop-type" class="form-control">
+                    <option value="1" {% if report_nap_audit_shop_type == '1' %}selected="selected"{% endif %}>1</option>
+                    <option value="2" {% if report_nap_audit_shop_type == '2' %}selected="selected"{% endif %}>2</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="tab-pane" id="tab-vat">
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="input-default-vat">{{ entry_default_vat }}</label>
+                <div class="col-sm-10">
+                  <input type="text" name="report_nap_audit_default_vat" value="{{ report_nap_audit_default_vat }}" id="input-default-vat" class="form-control" />
+                  <p class="help-block">{{ help_vat }}</p>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="input-invoice-date">{{ entry_invoice_date }}</label>
+                <div class="col-sm-10">
+                  <select name="report_nap_audit_invoice_date" id="input-invoice-date" class="form-control">
+                    {% for option in invoice_dates %}
+                    <option value="{{ option }}" {% if option == report_nap_audit_invoice_date %}selected="selected"{% endif %}>{{ option }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="tab-pane" id="tab-payment">
+              <p class="help-block">{{ help_payment }}</p>
+              <div class="table-responsive">
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th>{{ entry_paym_code }}</th>
+                      <th>{{ entry_paym_type }}</th>
+                      <th>{{ entry_pos }}</th>
+                      <th>{{ entry_proc }}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for method in payment_methods %}
+                    {% set map = report_nap_audit_payment_map[method.code] ?? {} %}
+                    <tr>
+                      <td>{{ method.name }} ({{ method.code }})</td>
+                      <td>
+                        <select name="report_nap_audit_payment_map[{{ method.code }}][paym]" class="form-control">
+                          <option value=""></option>
+                          {% for option in paym_options %}
+                          <option value="{{ option }}" {% if map.paym is defined and map.paym == option %}selected="selected"{% endif %}>{{ option }}</option>
+                          {% endfor %}
+                        </select>
+                      </td>
+                      <td><input type="text" name="report_nap_audit_payment_map[{{ method.code }}][pos_n]" value="{{ map.pos_n ?? '' }}" class="form-control" /></td>
+                      <td><input type="text" name="report_nap_audit_payment_map[{{ method.code }}][proc_id]" value="{{ map.proc_id ?? '' }}" class="form-control" /></td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="tab-pane" id="tab-refund">
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="input-refund-default">{{ entry_refund_default }}</label>
+                <div class="col-sm-10">
+                  <select name="report_nap_audit_refund_default" id="input-refund-default" class="form-control">
+                    {% for option in refund_options %}
+                    <option value="{{ option }}" {% if option == report_nap_audit_refund_default %}selected="selected"{% endif %}>{{ option }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <p class="help-block">Refund records are stored in table oc_nap_refund.</p>
+            </div>
+            <div class="tab-pane" id="tab-export">
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="input-year">{{ entry_year }}</label>
+                <div class="col-sm-10">
+                  <input type="text" name="year" value="{{ 'now'|date('Y') }}" id="input-year" class="form-control" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="input-month">{{ entry_month }}</label>
+                <div class="col-sm-10">
+                  <input type="text" name="month" value="{{ 'now'|date('m') }}" id="input-month" class="form-control" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label" for="input-store">{{ entry_store }}</label>
+                <div class="col-sm-10">
+                  <select name="store_id" id="input-store" class="form-control">
+                    {% for store in stores %}
+                    <option value="{{ store.store_id }}">{{ store.name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label">{{ entry_order_status }}</label>
+                <div class="col-sm-10">
+                  {% for order_status in order_statuses %}
+                  <div class="checkbox">
+                    <label>
+                      <input type="checkbox" name="order_status[]" value="{{ order_status.order_status_id }}" /> {{ order_status.name }}
+                    </label>
+                  </div>
+                  {% endfor %}
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-2"></div>
+                <div class="col-sm-10">
+                  <button type="button" id="button-generate" class="btn btn-success"><i class="fa fa-download"></i> {{ button_generate }}</button>
+                </div>
+              </div>
+            </div>
+            <div class="tab-pane" id="tab-history">
+              <div class="table-responsive">
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th>{{ entry_year }}</th>
+                      <th>{{ entry_month }}</th>
+                      <th>{{ entry_store }}</th>
+                      <th>Created</th>
+                      <th>Orders</th>
+                      <th>Refunds</th>
+                      <th>File</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for item in history %}
+                    <tr>
+                      <td>{{ item.year }}</td>
+                      <td>{{ item.month }}</td>
+                      <td>{{ item.store_id }}</td>
+                      <td>{{ item.created_at }}</td>
+                      <td>{{ item.orders_count }}</td>
+                      <td>{{ item.refunds_count }}</td>
+                      <td><a href="../{{ item.file_name }}" target="_blank">{{ item.file_name }}</a></td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                      <td colspan="7" class="text-center">No history yet.</td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript"><!--
+$('#button-generate').on('click', function() {
+  $.ajax({
+    url: '{{ generate }}',
+    type: 'post',
+    data: $('#tab-export :input'),
+    dataType: 'json',
+    success: function(json) {
+      $('.alert').remove();
+      if (json['error']) {
+        $('#content > .container-fluid').prepend('<div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> ' + json['error'] + '<button type="button" class="close" data-dismiss="alert">&times;</button></div>');
+      }
+      if (json['success']) {
+        $('#content > .container-fluid').prepend('<div class="alert alert-success"><i class="fa fa-check-circle"></i> ' + json['success'] + '<button type="button" class="close" data-dismiss="alert">&times;</button></div>');
+        if (json['file']) {
+          window.open('../' + json['file'], '_blank');
+        }
+      }
+    }
+  });
+});
+//--></script>
+{{ footer }}
